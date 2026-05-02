@@ -1,0 +1,3 @@
+# SporTech Retrieval System — Python dependencies
+# Tested on Python 3.10+
+
