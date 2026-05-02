@@ -63,7 +63,7 @@ class Searchrequest(BaseModel):
 
 class SearchResponse(BaseModel):
     query: str
-    result: List[retrievedDoc]
+    result: List[RetrievedDoc]
     method_used: str
     router_confidence : float
     latency_ms: float
