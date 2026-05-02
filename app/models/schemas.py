@@ -14,7 +14,7 @@ class Article(BaseModel):
     sport: str
     source: str
     url: Optional[str] = None
-    published_art: Optional[datetime] = None
+    published_at: Optional[datetime] = None
     entities: List[str] = Field(default_factory=list)
     tags: List[str] = Field(default_factory=list)
     word_count: int = 0
@@ -26,7 +26,7 @@ class Article(BaseModel):
 #query & relevance
 
 class RelevanceJudgement(BaseModel):
-    article_id = str
+    article_id: str
     relevance: int = Field(ge=0, le=3,
                            description= "0=irrelevant, 1 = marginally, 2: relevant, 3 = highly relevant")
     
@@ -54,7 +54,7 @@ class RetrievedDoc(BaseModel):
     snippet : str = ""
 
 
-class Searchrequest(BaseModel):
+class SearchRequest(BaseModel):
     query: str = Field(min_length= 1, max_length= 512)
     top_k : int = Field(default=10, ge=1, le=100)
     sport_filter: Optional[str] = None
