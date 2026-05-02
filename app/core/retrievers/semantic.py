@@ -28,5 +28,18 @@ class SemanaticRetriever(BaseRetriever):
             logger.info("Semantic: loading model %s...",self.cfg.model_name)
             self.model = SentenceTransformer(self.cfg.model_name)
 
-    def 
+    def _build_faiss(Self, embeddings: np.ndarray):
+        import faiss
+        dim  = embeddings.shape[1]
+        if len(embeddings) < 1_000_000:
+            quantizer = faiss.IndexFlatIP(dim)
+            index = faiss.IndexIVFFlat(quantizer, dim, nlist, faiss.METRIC_INNER_PRODUCT)
+            index.train(embeddings)
+        
+        index.add(embeddings)
+        return index
+    
+    
+
+
                          
