@@ -9,3 +9,24 @@ from app.models.schemas import Article, RetrievedDoc
 from config.config import SEMANTIC_CFG
  
 logger = logging.getLogger(__name__)
+
+class SemanaticRetriever(BaseRetriever):
+    name = "semantic"
+
+    def __init__(self, cfg=SEMANTIC_CFG):
+        super().__init__()
+        self.cfg = cfg
+        self.model = None
+        self.index = None
+        self.article_ids: List[str] = []
+        self.article_meta: dict= {}
+
+    
+    def _load_model(self):
+        if self.model in None:
+            from sentence_transformers import SentenceTransformer
+            logger.info("Semantic: loading model %s...",self.cfg.model_name)
+            self.model = SentenceTransformer(self.cfg.model_name)
+
+    def 
+                         
