@@ -1,0 +1,44 @@
+{
+  "_comment": "Add new players/teams/tournaments here — no redeployment needed, just restart server",
+
+  "players": [
+    "messi", "ronaldo", "neymar", "mbappe", "haaland", "salah",
+    "bellingham", "vinicius", "pedri", "modric", "kroos", "lewandowski",
+    "federer", "nadal", "djokovic", "alcaraz", "sinner", "medvedev",
+    "serena", "williams", "swiatek", "sabalenka", "gauff", "rybakina",
+    "lebron", "curry", "durant", "james", "jokic", "doncic", "tatum", "embiid",
+    "kohli", "tendulkar", "dhoni", "kumble", "rohit", "root", "stokes", "babar",
+    "bolt", "phelps", "tyson", "ali", "fury", "usyk", "joshua", "canelo",
+    "pogacar", "vingegaard", "roglic", "mcilroy", "scheffler", "rahm", "woods",
+    "mcdavid", "ovechkin", "draisaitl", "ohtani", "judge", "betts",
+    "axelsen", "sindhu", "marin", "momota", "ma long", "fan zhendong",
+    "dupont", "itoje", "kolbe", "etzebeth",
+    "ledecky", "dressel", "peaty", "titmus", "marchand",
+    "fraser-pryce", "kipyegon", "duplantis", "lyles", "jacobs"
+  ],
+
+  "teams": [
+    "barcelona", "real madrid", "manchester", "liverpool", "chelsea",
+    "arsenal", "city", "juventus", "psg", "bayern", "dortmund",
+    "lakers", "bulls", "warriors", "celtics", "nuggets", "bucks",
+    "india", "australia", "england", "pakistan", "newzealand",
+    "south africa", "west indies", "sri lanka",
+    "dodgers", "yankees", "red sox", "astros",
+    "oilers", "avalanche", "lightning", "maple leafs",
+    "all blacks", "springboks", "wallabies", "ireland", "france"
+  ],
+
+  "tournaments": [
+    "world cup", "champions league", "wimbledon", "us open",
+    "french open", "australian open", "olympics", "ipl",
+    "premier league", "la liga", "serie a", "bundesliga",
+    "nba finals", "super bowl", "stanley cup", "world series",
+    "tour de france", "giro", "vuelta",
+    "masters", "pga championship", "open championship",
+    "grand slam", "six nations", "rugby world cup",
+    "ashes", "t20 world cup", "test championship",
+    "copa america", "euros", "europa league", "fa cup",
+    "diamond league", "world athletics championships",
+    "all england open", "thomas cup", "uber cup"
+  ]
+}
