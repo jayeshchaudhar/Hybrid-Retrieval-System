@@ -2,6 +2,9 @@ from __future__ import annotations
 import json
 import logging
 import numpy as np
+import os
+import tempfile
+import textwrap
 from pathlib import Path
 from typing import List, Optional
 from app.core.retrievers.base import BaseRetriever
@@ -20,6 +23,8 @@ class SemanaticRetriever(BaseRetriever):
         self.index = None
         self.article_ids: List[str] = []
         self.article_meta: dict= {}
+        self._emb_cache : dict[str, np.ndarray] = {}
+        self._MAX_CACHE: int = 50_000
 
     
     def _load_model(self):
@@ -28,6 +33,7 @@ class SemanaticRetriever(BaseRetriever):
             logger.info("Semantic: loading model %s...",self.cfg.model_name)
             self.model = SentenceTransformer(self.cfg.model_name)
 
+    #FAISS index builder
     def _build_faiss(Self, embeddings: np.ndarray):
         import faiss
         dim  = embeddings.shape[1]
@@ -68,16 +74,35 @@ class SemanaticRetriever(BaseRetriever):
         logger.info("Semantic: FAISS index build - %d vectors", self.index.ntotal)
 
     
-    # Retrieval
+    # query embedding with LRU cache
 
+    def _get_query_embedding(self, query: str) -> np.ndarray:
+        key = query.lower().strip()
+        if key in self._emb_cache:
+            return self._emb_cache[key].reshape(1,-1)
+        
+        self._load_model()
+        emb = self.model.encode(
+            [query],
+            normalize_embeddings = True,
+            convert_to_numpy = True,
+        ).astype(np.float32)
+
+        if len(self._emb_cache) >= self._MAX_CACHE:
+            oldest_key = next(iter(self._emb_cache))
+            del self._emb_cache[oldest_key]
+
+        self._emb_cache[key] = emb[0]
+        return emb
+    
+    # Retrieve
     def retrieve(self, query: str, top_k: int  = 10, sport_filter: Optional[str] = None)-> List[RetrievedDoc]:
         if not self._indexed:
             raise RuntimeError("Index not built.")
         self._load_model()
 
         fetch_k = top_k * 5 if sport_filter else top_k
-        q_emb = self.model.encode(
-            [query], normalize_embeddings= True, convert_to_numpy= True).astype(np.float32)
+        q_emb = self._get_query_embedding(query)
         
         scores, indices = self.index.search(q_emb, min(fetch_k, self.index.ntotal))
 
@@ -103,14 +128,26 @@ class SemanaticRetriever(BaseRetriever):
                 break
         return results
 
+    @staticmethod
+    def _make_snippet(text, max_chars: int = 200) -> str:
+        return textwrap.shorten(text, width=max_chars, placeholder="...")
+    
     def save(self) -> None:
         import faiss
         self.cfg.faiss_index_path.parent.mkdir(parents=True, exist_ok=True)
-        faiss.write_index(self.index, str(self.cfg.faiss_index_path))
-        with open(self.cfg.ids_path,"w") as f:
+        tmp_index = self.cfg.faiss_index_path.with_suffix(".tmp")
+        faiss.write_index(self.index, str(tmp_index))
+
+        os.replace(tmp_index, self.cfg.faiss_index_path)
+        logger.info("Semantic: FAISS index saved automatically -> %s",
+                    self.cfg.faiss_index_path )
+        tmp_meta = self.cfg.ids_path.with_suffix(".tmp")
+        with open(tmp_meta,"w") as f:
             json.dump({"ids": self.article_ids, "meta": self.article_meta}, f)
-        logger.info("Semantic: index saved")
+        os.replace(tmp_meta, self.cfg.ids_path)
+        logger.info("Semantic: index saved automatically -> %s", self.cfg.ids_path)
     
+    #load
     def load(self) -> None:
         import faiss
         self.index = faiss.read_index(str(self.cfg.faiss_index_path))
