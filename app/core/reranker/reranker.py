@@ -1,0 +1,38 @@
+#Cross-encoder re-ranker — takes top-K candidates from first-stage retrieval and re-scores them with a cross-encoder
+from __future__ import annotations
+import logging
+from typing import List
+from app.models.schemas import RetrievedDoc
+from config.config import RERANKER_CFG, RerankerConfig
+
+logger = logging.getLogger(__name__)
+
+class Reranker:
+    def __init__(self, cfg: RerankerConfig = RERANKER_CFG):
+        self.cfg = cfg
+        self._model = None
+
+    def _load(self):
+        if self._model is None and self.cfg.enabled:
+            from sentence_transformers import CrossEncoder
+            logger.info("Reranker: loading %s…", self.cfg.model_name)
+            self._model = CrossEncoder(self.cfg.model_name, max_length=512)
+
+    def rerank(self, query: str, docs: List[RetrievedDoc]) -> List[RetrievedDoc]:
+        if not self.cfg.enabled or not docs:
+            return docs
+
+        self._load()
+        candidates = docs[:self.cfg.top_k_rerank]
+        pairs = [(query, f"{d.title}. {d.snippet}") for d in candidates]
+        scores = self._model.predict(pairs)
+
+        reranked = sorted(
+            zip(scores, candidates),
+            key=lambda x: x[0],
+            reverse=True,
+        )
+        out = []
+        for score, doc in reranked[: self.cfg.final_top_k]:
+            out.append(doc.model_copy(update={"score": float(score), "retriever": doc.retriever + "+rerank"}))
+        return out
