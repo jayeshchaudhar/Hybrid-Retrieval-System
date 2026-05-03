@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 def reciprocal_rank_fusion(
         ranked_lists :  List[List[RetrievedDoc]],
         weights: List[float],
-        K: int = 60,
+        k: int = 60,
 ) -> List[RetrievedDoc]:
     rrf_scores: Dict[str, float] = defaultdict(float)
     doc_meta :  Dict[str, RetrievedDoc] = {}

@@ -1,6 +1,7 @@
 from __future__ import annotations
 import pickle
 import logging
+import textwrap
 from typing import List, Optional
 import numpy as np
 from rank_bm25 import BM25Okapi
@@ -53,6 +54,7 @@ class BM25Retriever(BaseRetriever):
             k1=k1,
             b=b,
         )
+        logger.dubug("BM25: param updated - k1 = %.2f b = %.2f", k1, b)
 
     # ---------------- RETRIEVE ----------------
     def retrieve(
@@ -93,6 +95,9 @@ class BM25Retriever(BaseRetriever):
             ))
 
         return results
+    @staticmethod
+    def _make_snippet(text: str, max_chars : int = 200) -> str:
+        return textwrap.shorten(text, width=max_chars, placeholder="...")
 
     # ---------------- SAVE ----------------
     def save(self) -> None:
