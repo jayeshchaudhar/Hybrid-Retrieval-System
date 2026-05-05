@@ -1,0 +1,42 @@
+{
+  "generated_at": "2026-05-05T10:41:32.547177",
+  "total_articles": 460,
+  "dedup_method": "MD5 of lowercased, punctuation-stripped body",
+  "sources": {
+    "BBC Sport Football": 33,
+    "BBC Sport Cricket": 33,
+    "ESPN NBA": 17,
+    "BBC Basketball": 16,
+    "BBC Sport Tennis": 33,
+    "BBC Athletics": 33,
+    "BBC Swimming": 21,
+    "CyclingNews": 33,
+    "ESPN Boxing": 24,
+    "Sky Sports Boxing": 9,
+    "BBC Sport Golf": 33,
+    "BBC Rugby": 33,
+    "ESPN MLB": 21,
+    "Yahoo Sports MLB": 12,
+    "ESPN NHL": 11,
+    "Yahoo Sports NHL": 22,
+    "Guardian Sport": 52,
+    "BBC Sport": 24
+  },
+  "sports": {
+    "football": 33,
+    "cricket": 33,
+    "basketball": 33,
+    "tennis": 33,
+    "athletics": 33,
+    "swimming": 21,
+    "cycling": 33,
+    "boxing": 33,
+    "golf": 33,
+    "rugby": 33,
+    "baseball": 33,
+    "hockey": 33,
+    "volleyball": 33,
+    "badminton": 33,
+    "table_tennis": 10
+  }
+}

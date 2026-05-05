@@ -11,7 +11,7 @@ from config.config import TFIDF_CFG
 
 logger = logging.getLogger(__name__)
 
-class TFIDFRetrieve(BaseRetriever):
+class TFIDFRetriever(BaseRetriever):
     name = "tfidf"
 
     def __init__(self, cfg = TFIDF_CFG):

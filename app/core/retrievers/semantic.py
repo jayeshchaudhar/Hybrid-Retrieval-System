@@ -13,7 +13,7 @@ from config.config import SEMANTIC_CFG
  
 logger = logging.getLogger(__name__)
 
-class SemanaticRetriever(BaseRetriever):
+class SemanticRetriever(BaseRetriever):
     name = "semantic"
 
     def __init__(self, cfg=SEMANTIC_CFG):
