@@ -29,7 +29,7 @@ class Reranker:
         if self._model is None:
             self._load()
 
-        candidates = docs[:self.cfg.top_k_rerank]
+        candidates = docs[:self.cfg.top_k]
         pairs = [(query, f"{d.title}. {self._truncate(d.snippet)}")
                  for d in candidates]
         
@@ -47,7 +47,7 @@ class Reranker:
     
     @staticmethod
     def _truncate(text: str, max_chars: int = 300) -> str:
-        return textwrap.shoeten(text, width = max_chars, placeholder = "...")
+        return textwrap.shorten(text, width=max_chars, placeholder="...")
     
     @property
     def is_ready(self) -> bool:

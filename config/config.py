@@ -3,27 +3,28 @@ from pathlib import Path
 from dataclasses import dataclass, field
 from typing import List
 
-basedir = Path(__file__).resolve().parent.parent
-datadir = basedir
-corpusdir = datadir
-querydir = datadir
-processdir = datadir
-indexsdir = basedir
-evalutiondir = basedir
-logsdir = basedir
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_DIR = BASE_DIR / "data"
+CORPUS_DIR = DATA_DIR / "corpus"
+QUERIES_DIR = DATA_DIR / "queries"
+PROCESSED_DIR = DATA_DIR / "processed"
+INDEXES_DIR = BASE_DIR / "indexes"
+EVALUATION_DIR = BASE_DIR / "evaluation"
+LOGS_DIR = BASE_DIR / "logs"
 
-for d in [corpusdir, querydir, processdir, indexsdir, evalutiondir, logsdir]:
+for d in [CORPUS_DIR, QUERIES_DIR, PROCESSED_DIR, INDEXES_DIR, EVALUATION_DIR, LOGS_DIR]:
     d.mkdir(parents=True, exist_ok= True)
 
-corpusfile = corpusdir/ "articles.json"
-target_articles = 500
-sports = [
-    "football", "cricket", "basketball", "tennies", "athletics", 
+CORPUS_FILE = CORPUS_DIR / "articles.json"
+TARGET_ARTICLES = 500
+SPORTS = [
+    "football", "cricket", "basketball", "tennis", "athletics",
     "swimming", "cycling", "boxing", "golf", "rugby",
-    "baseball", "hockey", "volleyball", "badminton", "table_tennies",
+    "baseball", "hockey", "volleyball", "badminton", "table_tennis",
 ]
 
-articles_per_sport = target_articles//len(sports)
+ARTICLES_PER_SPORT = TARGET_ARTICLES // len(SPORTS)  
+
 
 # retrival
 
@@ -33,7 +34,7 @@ class TFIDFConfig:
     ngram_range: tuple = (1,2)
     sublinear_tf: bool = True
     top_k :  int = 10
-    index_path : Path = indexsdir/ "tfidf_index.pkl"
+    index_path : Path = INDEXES_DIR/ "tfidf_index.pkl"
 
 
 @dataclass
@@ -41,17 +42,17 @@ class BM25Config:
     k1: float = 1.5
     b: float = 0.75
     top_k: int = 10
-    index_path: Path = indexsdir/ "bm25_index.pkl"
+    index_path: Path = INDEXES_DIR/ "bm25_index.pkl"
 
 @dataclass
 class SemanticConfig:
     model_name: str = "sentence-transformers/all-MiniLM-L6-v2"
     batch_size : int = 64
     top_k: int = 10
-    emneddings_path: Path = indexsdir/ "embeddings.npy"
-    ids_path: Path = indexsdir/ "embedding_ids.json"
+    embeddings_path: Path = INDEXES_DIR / "embeddings.npy"
+    ids_path: Path =INDEXES_DIR/ "embedding_ids.json"
     # faiss index
-    faiss_index_path: Path = indexsdir/ "faiss.index"
+    faiss_index_path: Path = INDEXES_DIR/ "faiss.index"
     use_gpu: bool = False
 
 @dataclass
@@ -65,8 +66,8 @@ class HybridConfig:
 class DensecolBertConfig:
     model_name : str = "sentence-transformers/multi-qa-MiniLM-L6-cos-v1"
     top_k : int = 10
-    index_path:Path =  indexsdir/ "colbert_embeddings.npy"
-    ids_path : Path = indexsdir/ "colbert_ids.json"
+    index_path:Path =  INDEXES_DIR/ "colbert_embeddings.npy"
+    ids_path : Path = INDEXES_DIR/ "colbert_ids.json"
 
 # router
 @dataclass
@@ -81,8 +82,8 @@ class RouterConfig:
 
 @dataclass
 class RerankerConfig:
-    model_name : str = "cross-encoder/ms-macro-MiniLM-L-6-v2"
-    top_k : int = 20
+    model_name: str = "cross-encoder/ms-marco-TinyBERT-L-2-v2"  # 4x faster
+    top_k: int = 20
     final_top_k: int = 10
     enabled: bool = True
 
@@ -97,10 +98,10 @@ class CacheConfig:
 # evaluation
 @dataclass
 class EvalConfig:
-    queries_files: Path = querydir/ "queries.jsonl"
-    result_file: Path = evalutiondir/ "result.json"
+    queries_files: Path = QUERIES_DIR/ "queries.jsonl"
+    result_file: Path = EVALUATION_DIR/ "result.json"
     train_ratio: float = 0.6
-    dev_ration: float= 0.2
+    dev_ratio: float = 0.2
     test_ratio: float = 0.2
     relevance_levels: int = 4
     metrics : List[str] = field(default_factory=lambda: [

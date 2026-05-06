@@ -55,7 +55,7 @@ class SearchService:
         if cached:
             return SearchResponse(
                 query=req.query,
-                results=cached,
+                result=cached, 
                 method_used="cached",
                 router_confidence=1.0,
                 latency_ms=(time.perf_counter() - t0) * 1000,
@@ -79,7 +79,7 @@ class SearchService:
 
         return SearchResponse(
             query=req.query,
-            results=results,
+            result=results, 
             method_used=decision.method,
             router_confidence=decision.confidence,
             latency_ms=latency_ms,

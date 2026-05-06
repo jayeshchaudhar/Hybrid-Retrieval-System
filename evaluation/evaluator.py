@@ -17,7 +17,7 @@ from app.core.retrievers.dense_qa import DenseQARetriever
 from app.core.retrievers.hybrid import HybridRetriever
 from app.core.reranker.reranker import Reranker
 from evaluation.metrics import compute_all
-from config.config import EVAL_CFG, PROCESSED_DIR
+from config.config import EVAL_CFG, PROCESSED_DIR, SEMANTIC_CFG
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 def _load_queries(path: Path, split: str) -> List[LabeledQuery]:
     queries = []
-    with open(path) as f:
+    with open(path, encoding="utf-8") as f:
         for line in f:
             q = LabeledQuery(**json.loads(line))
             if q.split == split:
@@ -47,7 +47,7 @@ def evaluate_retriever(retriever, queries: List[LabeledQuery], top_k: int = 10) 
     errors: List[Dict] = []
 
     for q in queries:
-        relevance_map = {j.article_id: j.relevance for j in q.judgments}
+        relevance_map = {j.article_id: j.relevance for j in q.judgement}
         if not relevance_map:
             continue
 
@@ -97,10 +97,10 @@ def run_ablation_reduced_corpus(retriever, articles, queries, fraction=0.5) -> D
 
 def main():
     corpus_path = PROCESSED_DIR / "articles_processed.json"
-    with open(corpus_path) as f:
+    with open(corpus_path, encoding="utf-8") as f:
         articles = [Article(**a) for a in json.load(f)]
 
-    queries_path = EVAL_CFG.queries_file
+    queries_path = EVAL_CFG.queries_files
     if not queries_path.exists():
         logger.error("Queries file not found at %s. Run generate_queries.py first.", queries_path)
         sys.exit(1)
@@ -175,19 +175,18 @@ def main():
 
     report = EvalReport(
         metrics_per_method=metrics_list,
-        best_method=best.method,
+        base_model=SEMANTIC_CFG.model_name,
         ablation_results=ablation_results,
-        error_analysis=all_errors[:20],   # top 20 failures
+        error_analysis=all_errors[:20],
     )
 
-    EVAL_CFG.results_file.parent.mkdir(parents=True, exist_ok=True)
-    with open(EVAL_CFG.results_file, "w") as f:
+    with open(EVAL_CFG.result_file, "w", encoding="utf-8") as f:
         f.write(report.model_dump_json(indent=2))
-    logger.info("Results written to %s", EVAL_CFG.results_file)
+    logger.info("Results written to %s", EVAL_CFG.result_file)
 
     # Human-readable summary
-    summary_path = EVAL_CFG.results_file.parent / "summary.txt"
-    with open(summary_path, "w") as f:
+    summary_path = EVAL_CFG.result_file.parent / "summary.txt"
+    with open(summary_path, "w", encoding="utf-8") as f:
         f.write("=" * 60 + "\n")
         f.write("SPORTECH RETRIEVAL BENCHMARK — RESULTS SUMMARY\n")
         f.write("=" * 60 + "\n\n")

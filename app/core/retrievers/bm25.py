@@ -54,7 +54,7 @@ class BM25Retriever(BaseRetriever):
             k1=k1,
             b=b,
         )
-        logger.dubug("BM25: param updated - k1 = %.2f b = %.2f", k1, b)
+        logger.debug("BM25: param updated - k1 = %.2f b = %.2f", k1, b)
 
     # ---------------- RETRIEVE ----------------
     def retrieve(
@@ -104,7 +104,7 @@ class BM25Retriever(BaseRetriever):
         payload = {
             "bm25": self.bm25,
             "article_ids": [a.id for a in self.articles],
-            "article_meta": [(a.title, a.sport, a.body[:300]) for a in self.articles],
+            "article_meta": [(a.title, a.sport, a.body[:300], a.source) for a in self.articles],
         }
 
         self.cfg.index_path.parent.mkdir(parents=True, exist_ok=True)
@@ -122,7 +122,7 @@ class BM25Retriever(BaseRetriever):
         self.bm25 = payload["bm25"]
 
         self.articles = [
-            Article(id=aid, title=meta[0], sport=meta[1], body=meta[2])
+            Article(id=aid, title=meta[0], sport=meta[1], body=meta[2], source=meta[3])
             for aid, meta in zip(payload["article_ids"], payload["article_meta"])
         ]
 

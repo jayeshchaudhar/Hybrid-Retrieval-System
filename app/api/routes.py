@@ -2,6 +2,7 @@ from __future__ import annotations
 import time
 from fastapi import APIRouter, Depends, HTTPException, Query as QParam
 from app.models.schemas import SearchRequest, SearchResponse
+from functools import lru_cache
 from app.services.search_service import SearchService
 from app.api.dependencies import get_search_service
 from config.config import INDEXES_DIR
@@ -10,18 +11,28 @@ router = APIRouter(prefix="/api/v1")
 @router.post(
     "/search",
     response_model=SearchResponse,
+    response_model_exclude_none=True,
     summary="Search sports articles",
 )
 async def search(
     req: SearchRequest,
     svc: SearchService = Depends(get_search_service),
 ) -> SearchResponse:
+    import logging
+    logging.getLogger(__name__).info("Search called: %s", req.query)
     try:
         return svc.search(req)
-    except RuntimeError as e:
-        raise HTTPException(status_code=503, detail=str(e))
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/health", summary="Health check + index staleness")
+@router.get(
+    "/search",
+    response_model=SearchResponse,
+    response_model_exclude_none=True,
+    summary="Search via GET (query params)",
+)
 async def health(svc: SearchService = Depends(get_search_service)):
     faiss_path = INDEXES_DIR / "faiss.index"
 

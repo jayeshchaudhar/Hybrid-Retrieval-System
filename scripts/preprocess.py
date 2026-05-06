@@ -39,7 +39,7 @@ def preprocess(articles: list[Article]) -> list[Article]:
 
 def main():
     logger.info("Loading corpus from %s…", CORPUS_FILE)
-    with open(CORPUS_FILE) as f:
+    with open(CORPUS_FILE, "r", encoding="utf-8") as f:
         raw = json.load(f)
     articles = [Article(**item) for item in raw]
     logger.info("Loaded %d articles", len(articles))

@@ -15,7 +15,7 @@ from config.config import API_CFG
 
 logging.basicConfig(
     level= logging.INFO,
-    format= "%(asctime)S  %(levelname-8s)  %(name)  %s(message)s",
+    format= "%(asctime)s  %(levelname)-8s  %(name)s  %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 logger = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("="*50)
-    logger.info("SportTech Retrival API - Starting up...")
+    logger.info("SporTech Retrieval API - Starting up...")
     logger.info("="*50)
 
     # load indexes
@@ -44,10 +44,7 @@ async def lifespan(app: FastAPI):
             svc.reranker._load()          
             logger.info("Reranker model pre-loaded — no cold-start on first request")
         except Exception as e:
-            logger.warning(
-                "Reranker pre-load failed (%s) — will load lazily on first request",
-                e
-            )
+           logger.warning("Reranker pre-load failed (%s) — will load lazily", e)
 
     logger.info("SporTech Retrieval API — ready to serve requests")
     logger.info("=" * 50)

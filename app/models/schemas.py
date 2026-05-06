@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 
 
@@ -71,22 +71,22 @@ class SearchResponse(BaseModel):
 
 #Evaluation
 
-class Methodmetrics(BaseModel):
+class MethodMetrics(BaseModel):
     method: str
     ndcg_at_5: float
     ndcg_at_10 : float
     map_at_10 : float
     mrr : float
-    percision_at_5 : float
+    precision_at_5 : float
     recall_at_10: float
     p50_latency_ms: float
     p95_latency_ms: float
     n_queries: int
 
-class Evalreport(BaseModel):
+class EvalReport(BaseModel):
     run_id: str = Field(default_factory= lambda: str(uuid.uuid4()))
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
-    metrics_per_method: List[Methodmetrics]
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    metrics_per_method: List[MethodMetrics]
     base_model: str
     ablation_results : Dict[str, Any] = Field(default_factory= dict)
     error_analysis : List[Dict[str, Any]] = Field(default_factory=list)

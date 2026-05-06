@@ -28,24 +28,25 @@ class SemanticRetriever(BaseRetriever):
 
     
     def _load_model(self):
-        if self.model in None:
+        if self.model is None:
             from sentence_transformers import SentenceTransformer
             logger.info("Semantic: loading model %s...",self.cfg.model_name)
             self.model = SentenceTransformer(self.cfg.model_name)
 
     #FAISS index builder
-    def _build_faiss(Self, embeddings: np.ndarray):
+    def _build_faiss(self, embeddings: np.ndarray):
         import faiss
-        dim  = embeddings.shape[1]
+        dim = embeddings.shape[1]
         if len(embeddings) < 1_000_000:
-            index = faiss.IndexFlatIP(dim)
+            index = faiss.IndexFlatL2(dim)
         else:
             nlist = min(4096, len(embeddings) // 39)
             quantizer = faiss.IndexFlatIP(dim)
             index = faiss.IndexIVFFlat(quantizer, dim, nlist, faiss.METRIC_INNER_PRODUCT)
             index.train(embeddings)
-        
+
         index.add(embeddings)
+        self.index = index
         return index
     
     #index
@@ -65,9 +66,9 @@ class SemanticRetriever(BaseRetriever):
 
         self.article_ids = [a.id for a in articles]
         self.article_meta = {
-            a.id: {"title": a.title, "sport": a.sport, "snippet": a.body[:300]}
+            a.id: {"title": a.title, "sport": a.sport, "snippet": a.body[:300], "source": a.source}
             for a in articles
-        }
+            }
 
         self._indexed = self._build_faiss(embeddings)
         self._indexed = True
@@ -142,7 +143,7 @@ class SemanticRetriever(BaseRetriever):
         logger.info("Semantic: FAISS index saved automatically -> %s",
                     self.cfg.faiss_index_path )
         tmp_meta = self.cfg.ids_path.with_suffix(".tmp")
-        with open(tmp_meta,"w") as f:
+        with open(tmp_meta, "w", encoding="utf-8") as f:
             json.dump({"ids": self.article_ids, "meta": self.article_meta}, f)
         os.replace(tmp_meta, self.cfg.ids_path)
         logger.info("Semantic: index saved automatically -> %s", self.cfg.ids_path)
@@ -151,7 +152,7 @@ class SemanticRetriever(BaseRetriever):
     def load(self) -> None:
         import faiss
         self.index = faiss.read_index(str(self.cfg.faiss_index_path))
-        with open(self.cfg.ids_path) as f:
+        with open(self.cfg.ids_path, encoding="utf-8") as f:
             data = json.load(f)
         
         self.article_ids = data["ids"]

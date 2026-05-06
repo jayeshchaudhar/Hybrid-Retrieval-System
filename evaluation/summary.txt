@@ -1,0 +1,17 @@
+============================================================
+SPORTECH RETRIEVAL BENCHMARK — RESULTS SUMMARY
+============================================================
+
+Method         nDCG@5  nDCG@10   MAP@10      MRR      P@5     R@10   p50ms   p95ms
+--------------------------------------------------------------------------------
+hybrid          0.216    0.204    0.161    0.387    0.233    0.129    16.5    19.3
+tfidf           0.173    0.187    0.098    0.356    0.183    0.134     1.2     1.5
+bm25            0.204    0.186    0.117    0.386    0.200    0.112     1.3     1.5
+dense_qa        0.182    0.150    0.098    0.333    0.217    0.095    13.6    22.9
+semantic        0.150    0.144    0.088    0.323    0.167    0.090    15.8    55.8
+
+Best method: hybrid
+
+Ablation Results:
+  half_corpus_bm25: {'description': 'BM25 trained on 50% of corpus — tests corpus size sensitivity', 'ndcg@10': 0.2639306203490604, 'map@10': 0.15205357142857143}
+  hybrid_no_reranker: {'description': 'Hybrid RRF without cross-encoder reranker — measures reranker value', 'ndcg@10': 0.2037725099098861, 'map@10': 0.16147156084656084}

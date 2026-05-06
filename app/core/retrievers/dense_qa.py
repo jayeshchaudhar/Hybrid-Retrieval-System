@@ -9,7 +9,7 @@ from config.config import COLBERT_CFG
 
 logger = logging.getLogger(__name__)
 
-class DenseQARetriver(BaseRetriever):
+class DenseQARetriever(BaseRetriever):
 
     name = "dense_qa"
 
@@ -47,7 +47,7 @@ class DenseQARetriver(BaseRetriever):
         self.index.add(embeddings)
         self.article_ids = [a.id for a in articles]
         self.article_meta = {
-            a.id: {"title": a.title, "sport": a.sport, "snippet": a.body[:300]}
+            a.id: {"title": a.title, "sport": a.sport, "snippet": a.body[:300], "source": a.source}
             for a in articles
         }
 
@@ -94,14 +94,14 @@ class DenseQARetriver(BaseRetriever):
         import faiss
         self.cfg.index_path.parent.mkdir(parents=True, exist_ok=True)
         faiss.write_index(self.index, str(self.cfg.index_path))
-        with open(self.cfg.ids_path, "w") as f:
+        with open(self.cfg.ids_path, "w", encoding="utf-8") as f:
             json.dump({"ids": self.article_ids, "meta": self.article_meta}, f)
         logger.info("DenseQA: index saved")
  
     def load(self) -> None:
         import faiss
         self.index = faiss.read_index(str(self.cfg.index_path))
-        with open(self.cfg.ids_path) as f:
+        with open(self.cfg.ids_path, encoding="utf-8") as f:
             data = json.load(f)
         self.article_ids = data["ids"]
         self.article_meta = data["meta"]

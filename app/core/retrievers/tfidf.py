@@ -85,7 +85,7 @@ class TFIDFRetriever(BaseRetriever):
             "vectorizer": self.vectorizer,
             "matrix": self.matrix,
             "article_ids": [a.id for a in self.articles],
-            "article.meta":[(a.title, a.sport, a.body[:300]) for a in self.articles],
+            "article_meta": [(a.title, a.sport, a.body[:300], a.source) for a in self.articles],
         }
 
         self.cfg.index_path.parent.mkdir(parents=True, exist_ok=True)
@@ -100,7 +100,7 @@ class TFIDFRetriever(BaseRetriever):
         self.matrix = payload["matrix"]
         # Reconstruct lightweight Article stubs for metadata
         self.articles = [
-            Article(id=aid, title=meta[0], sport=meta[1], body=meta[2])
+            Article(id=aid, title=meta[0], sport=meta[1], body=meta[2], source=meta[3])
             for aid, meta in zip(payload["article_ids"], payload["article_meta"])
         ]
         self._indexed = True

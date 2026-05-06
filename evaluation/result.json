@@ -1,0 +1,421 @@
+{
+  "run_id": "66edca57-45b6-4cbb-b7af-10e17b89ff6d",
+  "timestamp": "2026-05-06T08:50:55.159631Z",
+  "metrics_per_method": [
+    {
+      "method": "tfidf",
+      "ndcg_at_5": 0.17304273223329975,
+      "ndcg_at_10": 0.18661681004512076,
+      "map_at_10": 0.09753306878306879,
+      "mrr": 0.35648148148148145,
+      "precision_at_5": 0.18333333333333335,
+      "recall_at_10": 0.13373015873015873,
+      "p50_latency_ms": 1.211900000271271,
+      "p95_latency_ms": 1.5181999988271855,
+      "n_queries": 12
+    },
+    {
+      "method": "bm25",
+      "ndcg_at_5": 0.2044724458251105,
+      "ndcg_at_10": 0.18582960279060803,
+      "map_at_10": 0.11729497354497354,
+      "mrr": 0.3861111111111111,
+      "precision_at_5": 0.2,
+      "recall_at_10": 0.1115079365079365,
+      "p50_latency_ms": 1.2710000009974465,
+      "p95_latency_ms": 1.5208999993774341,
+      "n_queries": 12
+    },
+    {
+      "method": "semantic",
+      "ndcg_at_5": 0.15024798387569535,
+      "ndcg_at_10": 0.14379868381899116,
+      "map_at_10": 0.08768849206349207,
+      "mrr": 0.3229166666666667,
+      "precision_at_5": 0.16666666666666669,
+      "recall_at_10": 0.08968253968253968,
+      "p50_latency_ms": 15.792799998962437,
+      "p95_latency_ms": 55.792000001019915,
+      "n_queries": 12
+    },
+    {
+      "method": "dense_qa",
+      "ndcg_at_5": 0.1823171678870051,
+      "ndcg_at_10": 0.14962647995272682,
+      "map_at_10": 0.09814814814814814,
+      "mrr": 0.3333333333333333,
+      "precision_at_5": 0.21666666666666667,
+      "recall_at_10": 0.09484126984126984,
+      "p50_latency_ms": 13.586200000645476,
+      "p95_latency_ms": 22.919200000615092,
+      "n_queries": 12
+    },
+    {
+      "method": "hybrid",
+      "ndcg_at_5": 0.21561464066539227,
+      "ndcg_at_10": 0.2037725099098861,
+      "map_at_10": 0.16147156084656084,
+      "mrr": 0.3869047619047619,
+      "precision_at_5": 0.23333333333333334,
+      "recall_at_10": 0.12857142857142856,
+      "p50_latency_ms": 16.54909999888332,
+      "p95_latency_ms": 19.315899999128305,
+      "n_queries": 12
+    }
+  ],
+  "base_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "ablation_results": {
+    "half_corpus_bm25": {
+      "description": "BM25 trained on 50% of corpus — tests corpus size sensitivity",
+      "ndcg@10": 0.2639306203490604,
+      "map@10": 0.15205357142857143
+    },
+    "hybrid_no_reranker": {
+      "description": "Hybrid RRF without cross-encoder reranker — measures reranker value",
+      "ndcg@10": 0.2037725099098861,
+      "map@10": 0.16147156084656084
+    }
+  },
+  "error_analysis": [
+    {
+      "query_id": "d4ef052b-3828-43f5-ba5a-43e00f097779",
+      "query_text": "athletic performance under pressure during crucial moments",
+      "query_type": "semantic",
+      "ndcg@10": 0.0,
+      "retrieved_top3": [
+        "02317b9563102f4c696e225b5eade0c1",
+        "ba55041248742713e27f078e0a1d467c",
+        "f3222790a0d7cdfd74c5fb77c0a94449"
+      ],
+      "relevant": [
+        "6e78d74581680dcb8c25952082f51d04",
+        "726b93db7c7df308b065d8daa3e5c002",
+        "dc399e628a0a09776721d56fb5ce8f2f"
+      ],
+      "diagnosis": "low_recall"
+    },
+    {
+      "query_id": "2eeda328-03c6-4c8f-9988-3529142c286d",
+      "query_text": "What is the record for fastest 100m sprint?",
+      "query_type": "factual",
+      "ndcg@10": 0.17576128616521539,
+      "retrieved_top3": [
+        "c2c78cc8c02b7f4463f8ba83b10d3a65",
+        "0db39b2890d9ad41a9ba2aca8707d804",
+        "18bb824949bf54707f607fd4c18e71a3"
+      ],
+      "relevant": [
+        "2763bb69b7df11ad2f50f4f3bae2dbb9",
+        "232225ffbc0d6a94c60e11ebdf3a27ac",
+        "87a3c7b409592b24d50aabb4c72cdaf0"
+      ],
+      "diagnosis": "low_recall"
+    },
+    {
+      "query_id": "687e6484-7ea0-465e-b03f-1b174c277649",
+      "query_text": "young talent emerging in competitive sports leagues",
+      "query_type": "semantic",
+      "ndcg@10": 0.0,
+      "retrieved_top3": [
+        "07a2324303801650609e7fed6e6fb1ea",
+        "bd917f97d0c76b424e99e86b94135e20",
+        "a693b03d4b8270f8fc78e1172029728a"
+      ],
+      "relevant": [
+        "44a890575eb2366373fcae793742ba3f",
+        "726b93db7c7df308b065d8daa3e5c002",
+        "0e53b52ae7de4189ca5b8edd30c85265"
+      ],
+      "diagnosis": "low_recall"
+    },
+    {
+      "query_id": "07e6d7c8-ded1-4075-b717-3d6738d76460",
+      "query_text": "tactical evolution in modern team sports strategy",
+      "query_type": "semantic",
+      "ndcg@10": 0.05968602240696155,
+      "retrieved_top3": [
+        "676cb24d3208f1aec02992e3649f78f0",
+        "aa36315d4c992c04e3cefc9f80749dff",
+        "ff06fc969ec0c2495fc75822bfd0e57f"
+      ],
+      "relevant": [
+        "dc152a79eca0c1ec6643a6e5fc3f57c0",
+        "346d7353bb4a3bf3b6a18622bc747e90",
+        "54ad6ad2d86ef241ec1dc03f7b03f573"
+      ],
+      "diagnosis": "low_recall"
+    },
+    {
+      "query_id": "bd0a53d9-06d7-4ccc-96f5-a002327faeef",
+      "query_text": "Which golfer has won the most majors?",
+      "query_type": "factual",
+      "ndcg@10": 0.0,
+      "retrieved_top3": [
+        "6685a1d07b2a5e9919c197d53325dc54",
+        "5eb3fa8bb0fce202f8a3ddfe1ba1c389",
+        "01329cf2648848e352e07b8c76d3facb"
+      ],
+      "relevant": [
+        "2763bb69b7df11ad2f50f4f3bae2dbb9",
+        "e623d5712612480e0560d66e23b30ed5",
+        "e263ca93ae1849d8a3a8d47eb019ef67"
+      ],
+      "diagnosis": "low_recall"
+    },
+    {
+      "query_id": "34625802-717d-4145-b472-ffa4eb762cf0",
+      "query_text": "Hockey penalty shootout goalkeeper statistics",
+      "query_type": "hybrid",
+      "ndcg@10": 0.04353781328125616,
+      "retrieved_top3": [
+        "c437f01726cbe31bc6a064691248e16e",
+        "f2e42f1d1320d70b7a2d643d4acbfe52",
+        "a83721b5d7245160225378001bd547a5"
+      ],
+      "relevant": [
+        "232225ffbc0d6a94c60e11ebdf3a27ac",
+        "035a2e2af746cad45bba0e2eb2b89b04",
+        "dc152a79eca0c1ec6643a6e5fc3f57c0"
+      ],
+      "diagnosis": "low_recall"
+    },
+    {
+      "query_id": "03ed6933-9a9b-4ad7-993d-87899ccad079",
+      "query_text": "Tennis serve speed versus accuracy trade-off",
+      "query_type": "hybrid",
+      "ndcg@10": 0.111790044842754,
+      "retrieved_top3": [
+        "cd48d97546e8fa55831d17543830f071",
+        "76d1948fd52d8166a711992a195a8991",
+        "f80bf1684ce1395a75909dee3af28275"
+      ],
+      "relevant": [
+        "232225ffbc0d6a94c60e11ebdf3a27ac",
+        "7d9ef4ff8468dceb0bbc0197e4aedf00",
+        "7289efde0dbca01099f9575254b6b55f"
+      ],
+      "diagnosis": "low_recall"
+    },
+    {
+      "query_id": "d4ef052b-3828-43f5-ba5a-43e00f097779",
+      "query_text": "athletic performance under pressure during crucial moments",
+      "query_type": "semantic",
+      "ndcg@10": 0.0,
+      "retrieved_top3": [
+        "f3222790a0d7cdfd74c5fb77c0a94449",
+        "02317b9563102f4c696e225b5eade0c1",
+        "7289efde0dbca01099f9575254b6b55f"
+      ],
+      "relevant": [
+        "6e78d74581680dcb8c25952082f51d04",
+        "726b93db7c7df308b065d8daa3e5c002",
+        "dc399e628a0a09776721d56fb5ce8f2f"
+      ],
+      "diagnosis": "low_recall"
+    },
+    {
+      "query_id": "2eeda328-03c6-4c8f-9988-3529142c286d",
+      "query_text": "What is the record for fastest 100m sprint?",
+      "query_type": "factual",
+      "ndcg@10": 0.0,
+      "retrieved_top3": [
+        "0db39b2890d9ad41a9ba2aca8707d804",
+        "ba1bd0a47f094f97b7ee96bea983718c",
+        "80048efd7a2afe9970d542640cebb685"
+      ],
+      "relevant": [
+        "2763bb69b7df11ad2f50f4f3bae2dbb9",
+        "232225ffbc0d6a94c60e11ebdf3a27ac",
+        "87a3c7b409592b24d50aabb4c72cdaf0"
+      ],
+      "diagnosis": "low_recall"
+    },
+    {
+      "query_id": "fa5ab864-953c-4899-8531-57cfc94d18a3",
+      "query_text": "Who won the Rugby World Cup in 2023?",
+      "query_type": "factual",
+      "ndcg@10": 0.0,
+      "retrieved_top3": [
+        "8eb2100238231a94a4e874acc58546d4",
+        "68cb75be06183f105b3d76a9ddcbe251",
+        "5d11d3a3e0077d1f9993a8776689bb7b"
+      ],
+      "relevant": [
+        "2763bb69b7df11ad2f50f4f3bae2dbb9",
+        "232225ffbc0d6a94c60e11ebdf3a27ac",
+        "816a4b8d3481f0d3e1ca0d2689ebd944"
+      ],
+      "diagnosis": "low_recall"
+    },
+    {
+      "query_id": "687e6484-7ea0-465e-b03f-1b174c277649",
+      "query_text": "young talent emerging in competitive sports leagues",
+      "query_type": "semantic",
+      "ndcg@10": 0.0,
+      "retrieved_top3": [
+        "ff06fc969ec0c2495fc75822bfd0e57f",
+        "aa36315d4c992c04e3cefc9f80749dff",
+        "07a2324303801650609e7fed6e6fb1ea"
+      ],
+      "relevant": [
+        "44a890575eb2366373fcae793742ba3f",
+        "726b93db7c7df308b065d8daa3e5c002",
+        "0e53b52ae7de4189ca5b8edd30c85265"
+      ],
+      "diagnosis": "low_recall"
+    },
+    {
+      "query_id": "07e6d7c8-ded1-4075-b717-3d6738d76460",
+      "query_text": "tactical evolution in modern team sports strategy",
+      "query_type": "semantic",
+      "ndcg@10": 0.057313656277404236,
+      "retrieved_top3": [
+        "aa36315d4c992c04e3cefc9f80749dff",
+        "ff06fc969ec0c2495fc75822bfd0e57f",
+        "c8b4a3152bbf89b64eae62b8974b1230"
+      ],
+      "relevant": [
+        "dc152a79eca0c1ec6643a6e5fc3f57c0",
+        "346d7353bb4a3bf3b6a18622bc747e90",
+        "54ad6ad2d86ef241ec1dc03f7b03f573"
+      ],
+      "diagnosis": "low_recall"
+    },
+    {
+      "query_id": "bd0a53d9-06d7-4ccc-96f5-a002327faeef",
+      "query_text": "Which golfer has won the most majors?",
+      "query_type": "factual",
+      "ndcg@10": 0.0,
+      "retrieved_top3": [
+        "e56d64cf699de7fb6bea7b397710873c",
+        "6f1bdb85d7c64fe84d76663b019efdbb",
+        "5eb3fa8bb0fce202f8a3ddfe1ba1c389"
+      ],
+      "relevant": [
+        "2763bb69b7df11ad2f50f4f3bae2dbb9",
+        "e623d5712612480e0560d66e23b30ed5",
+        "e263ca93ae1849d8a3a8d47eb019ef67"
+      ],
+      "diagnosis": "low_recall"
+    },
+    {
+      "query_id": "34625802-717d-4145-b472-ffa4eb762cf0",
+      "query_text": "Hockey penalty shootout goalkeeper statistics",
+      "query_type": "hybrid",
+      "ndcg@10": 0.047283507740116394,
+      "retrieved_top3": [
+        "a83721b5d7245160225378001bd547a5",
+        "f2e42f1d1320d70b7a2d643d4acbfe52",
+        "c437f01726cbe31bc6a064691248e16e"
+      ],
+      "relevant": [
+        "232225ffbc0d6a94c60e11ebdf3a27ac",
+        "035a2e2af746cad45bba0e2eb2b89b04",
+        "dc152a79eca0c1ec6643a6e5fc3f57c0"
+      ],
+      "diagnosis": "low_recall"
+    },
+    {
+      "query_id": "df19a319-cfe1-4b8f-9b0c-4e378e1cef14",
+      "query_text": "Golf mental game under Major championship pressure",
+      "query_type": "hybrid",
+      "ndcg@10": 0.1884441521277154,
+      "retrieved_top3": [
+        "48d80b52423001251cbeded28f89a3b5",
+        "143b9b53fee44a9b21884b52ee1d3f35",
+        "74c6c59fd81dc9ad88e50fc1d46ae44a"
+      ],
+      "relevant": [
+        "44a890575eb2366373fcae793742ba3f",
+        "4b76faabda71545f0c091e901c705b70",
+        "d09a6b66dea7643daf86c59cfdc6626b"
+      ],
+      "diagnosis": "low_recall"
+    },
+    {
+      "query_id": "d4ef052b-3828-43f5-ba5a-43e00f097779",
+      "query_text": "athletic performance under pressure during crucial moments",
+      "query_type": "semantic",
+      "ndcg@10": 0.0,
+      "retrieved_top3": [
+        "7289efde0dbca01099f9575254b6b55f",
+        "867f515c91a883583877704cd6f7fb14",
+        "035a2e2af746cad45bba0e2eb2b89b04"
+      ],
+      "relevant": [
+        "6e78d74581680dcb8c25952082f51d04",
+        "726b93db7c7df308b065d8daa3e5c002",
+        "dc399e628a0a09776721d56fb5ce8f2f"
+      ],
+      "diagnosis": "low_recall"
+    },
+    {
+      "query_id": "2eeda328-03c6-4c8f-9988-3529142c286d",
+      "query_text": "What is the record for fastest 100m sprint?",
+      "query_type": "factual",
+      "ndcg@10": 0.0,
+      "retrieved_top3": [
+        "0575a817e2445c747b06a740fbc72a34",
+        "afcd15b92d30f87ccbd2c70249204bad",
+        "0db39b2890d9ad41a9ba2aca8707d804"
+      ],
+      "relevant": [
+        "2763bb69b7df11ad2f50f4f3bae2dbb9",
+        "232225ffbc0d6a94c60e11ebdf3a27ac",
+        "87a3c7b409592b24d50aabb4c72cdaf0"
+      ],
+      "diagnosis": "low_recall"
+    },
+    {
+      "query_id": "fa5ab864-953c-4899-8531-57cfc94d18a3",
+      "query_text": "Who won the Rugby World Cup in 2023?",
+      "query_type": "factual",
+      "ndcg@10": 0.0,
+      "retrieved_top3": [
+        "d691ccaf014334527670f28257959452",
+        "01870d5d7ba569c198174d2b73b0d5b6",
+        "aedc9fe2fa4d93d53b5c74870f15b1ea"
+      ],
+      "relevant": [
+        "2763bb69b7df11ad2f50f4f3bae2dbb9",
+        "232225ffbc0d6a94c60e11ebdf3a27ac",
+        "816a4b8d3481f0d3e1ca0d2689ebd944"
+      ],
+      "diagnosis": "low_recall"
+    },
+    {
+      "query_id": "687e6484-7ea0-465e-b03f-1b174c277649",
+      "query_text": "young talent emerging in competitive sports leagues",
+      "query_type": "semantic",
+      "ndcg@10": 0.06943122193677727,
+      "retrieved_top3": [
+        "419c99e4a524d6b5fe8a5fc5b14b5aed",
+        "fd32ec136d76bd4c38666a97fc57e061",
+        "0ab8db07d46b81fa08ecaef894c1ebb3"
+      ],
+      "relevant": [
+        "44a890575eb2366373fcae793742ba3f",
+        "726b93db7c7df308b065d8daa3e5c002",
+        "0e53b52ae7de4189ca5b8edd30c85265"
+      ],
+      "diagnosis": "low_recall"
+    },
+    {
+      "query_id": "07e6d7c8-ded1-4075-b717-3d6738d76460",
+      "query_text": "tactical evolution in modern team sports strategy",
+      "query_type": "semantic",
+      "ndcg@10": 0.19572228152938376,
+      "retrieved_top3": [
+        "00dbea863bca387f9ed753e692f276f6",
+        "1ca9a774d9c6c79290273492e54251b6",
+        "6685a1d07b2a5e9919c197d53325dc54"
+      ],
+      "relevant": [
+        "dc152a79eca0c1ec6643a6e5fc3f57c0",
+        "346d7353bb4a3bf3b6a18622bc747e90",
+        "54ad6ad2d86ef241ec1dc03f7b03f573"
+      ],
+      "diagnosis": "low_recall"
+    }
+  ]
+}

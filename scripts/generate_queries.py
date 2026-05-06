@@ -7,7 +7,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from app.models.schemas import LabeledQuery, RelevanceJudgment, Article
+from app.models.schemas import LabeledQuery,RelevanceJudgement, Article
 from config.config import EVAL_CFG, PROCESSED_DIR, SPORTS
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
@@ -90,13 +90,7 @@ _HYBRID_QUERIES = [
 ]
 
 
-def _assign_relevance(query: str, articles: list[Article]) -> list[RelevanceJudgment]:
-    """
-    3 = Highly relevant
-    2 = Relevant
-    1 = Marginally relevant
-    0 = Irrelevant
-    """
+def _assign_relevance(query: str, articles: list[Article]) -> list[RelevanceJudgement]:
     q_lower = query.lower()
     q_tokens = set(q_lower.split())
 
@@ -104,13 +98,13 @@ def _assign_relevance(query: str, articles: list[Article]) -> list[RelevanceJudg
     for a in articles:
         text = f"{a.title} {a.body}".lower()
         text_tokens = set(text.split())
-
-        # Count matching tokens
         overlap = len(q_tokens & text_tokens)
         sport_match = a.sport.replace("_", " ") in q_lower or any(
             tok in q_lower for tok in a.sport.split("_")
         )
-        entity_match = any(e.lower() in q_lower for e in a.entities)
+        # Extract capitalized words from title as entities
+        title_entities = [w.lower() for w in a.title.split() if w[0].isupper()]
+        entity_match = any(e in q_lower for e in title_entities)
 
         if entity_match and overlap >= 3:
             grade = 3
@@ -122,9 +116,9 @@ def _assign_relevance(query: str, articles: list[Article]) -> list[RelevanceJudg
             grade = 0
 
         if grade > 0:
-            judgments.append(RelevanceJudgment(article_id=a.id, relevance=grade))
+            judgments.append(RelevanceJudgement(article_id=a.id, relevance=grade))
 
-    return judgments[:15]   # max 15 judgments per query
+    return judgments[:15]
 
 
 def build_eval_set(articles: list[Article]) -> list[LabeledQuery]:
@@ -157,7 +151,7 @@ def build_eval_set(articles: list[Article]) -> list[LabeledQuery]:
             text=text,
             query_type=qtype,
             split=split,
-            judgments=judgments,
+            judgement=judgments,   # ← wrong key, silently ignored by pydantic
         )
         queries.append(q)
 
@@ -178,14 +172,14 @@ def main():
         split_counts[q.split] = split_counts.get(q.split, 0) + 1
     logger.info("Split distribution: %s", split_counts)
 
-    EVAL_CFG.queries_file.parent.mkdir(parents=True, exist_ok=True)
-    with open(EVAL_CFG.queries_file, "w") as f:
+    EVAL_CFG.queries_files.parent.mkdir(parents=True, exist_ok=True)
+    with open(EVAL_CFG.queries_files, "w", encoding="utf-8") as f:
         for q in queries:
             f.write(q.model_dump_json() + "\n")
-    logger.info("Queries written to %s", EVAL_CFG.queries_file)
+    logger.info("Queries written to %s", EVAL_CFG.queries_files)
 
-    rubric_path = EVAL_CFG.queries_file.parent / "labeling_rubric.md"
-    with open(rubric_path, "w") as f:
+    rubric_path = EVAL_CFG.queries_files.parent / "labeling_rubric.md"
+    with open(rubric_path, "w", encoding="utf-8") as f:
         f.write("""# Labeling Rubric — SporTech Retrieval Benchmark
 
 ## Relevance Grades

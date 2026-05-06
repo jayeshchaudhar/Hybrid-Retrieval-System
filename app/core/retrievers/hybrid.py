@@ -5,8 +5,8 @@ from typing import List, Optional, Dict
 from collections import defaultdict
 from app.core.retrievers.base import BaseRetriever
 from app.core.retrievers.bm25 import BM25Retriever
-from app.core.retrievers.semantic import SemanaticRetriever
-from app.core.retrievers.semantic import Article, RetrievedDoc
+from app.core.retrievers.semantic import SemanticRetriever
+from app.models.schemas import Article, RetrievedDoc
 from config.config import HYBRID_CFG, BM25_CFG, SEMANTIC_CFG
 
 logger = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ def reciprocal_rank_fusion(
     fused = []
 
     for aid, score, in sorted(rrf_scores.items(), key = lambda x: -x[1]):
-        d = doc_meta[aid].model_copy(update={"Score": score, "retriever":"hybrid"})
+        d = doc_meta[aid].model_copy(update={"score": score, "retriever": "hybrid"})
         fused.append(d)
     return fused
 
@@ -38,11 +38,11 @@ class HybridRetriever(BaseRetriever):
         super().__init__()
         self.cfg = cfg
         self.bm25 = BM25Retriever(bm25_cfg)
-        self.semantic = SemanaticRetriever(semantic_cfg)
+        self.semantic = SemanticRetriever(semantic_cfg)
     
     #index
     def build_index(self, articles: List[Article]) -> None:
-        logger.info("Hybrid: Delegating index build ro BM25 + Semantic...")
+        logger.info("Hybrid: Delegating index build to BM25 + Semantic...")
         self.bm25.build_index(articles)
         self.semantic.build_index(articles)
         self._indexed = True
@@ -63,8 +63,8 @@ class HybridRetriever(BaseRetriever):
     
     #Persistence
 
-    def save(self)-> None:
-        self.bm25.load()
+    def save(self) -> None:
+        self.bm25.save()
         self.semantic.save()
 
     def load(self) -> None:
